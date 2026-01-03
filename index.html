@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small Habits. Big Change. - Habit Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Auth Container (Full page login) -->
+        <div class="auth-container" id="authContainer">
+            <div class="auth-content">
+                <div class="auth-header">
+                    <h1>✨ HabitFlow ✨</h1>
+                    <p>Build Better Habits, One Day at a Time</p>
+                </div>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="loginTab">Login</button>
+                    <button class="auth-tab" id="signupTab">Sign Up</button>
+                </div>
+                <div class="auth-forms">
+                    <!-- Login Form -->
+                    <form class="auth-form active" id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        <div class="auth-error" id="loginError"></div>
+                    </form>
+                    
+                    <!-- Signup Form -->
+                    <form class="auth-form" id="signupForm">
+                        <div class="form-group">
+                            <label for="signupName">Name</label>
+                            <input type="text" id="signupName" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail">Email</label>
+                            <input type="email" id="signupEmail" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" placeholder="6+ characters" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupConfirmPassword">Confirm Password</label>
+                            <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                        <div class="auth-error" id="signupError"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App (Shows by default) -->
+        <div class="main-app" id="mainApp">
+        <!-- Top Navigation Bar -->
+        <header class="top-nav">
+            <div class="nav-content">
+                <div class="nav-left">
+                    <button class="nav-btn" id="monthNavPrev" title="Previous Month">←</button>
+                    <span class="current-month" id="currentMonth"></span>
+                    <button class="nav-btn" id="monthNavNext" title="Next Month">→</button>
+                </div>
+                <div class="nav-center">
+                    <h1 class="app-title">✨ HabitFlow ✨</h1>
+                </div>
+                <div class="nav-right">
+                    <button class="nav-btn" id="loginBtn" title="Login / Sign Up">🔓 Login</button>
+                    <div class="profile-dropdown-container">
+                        <button class="nav-btn" id="profileBtn" title="Profile / User Info">👤</button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-dropdown-header">
+                                <div class="profile-user-name" id="profileUserName">User Name</div>
+                                <div class="profile-user-email" id="profileUserEmail">user@email.com</div>
+                            </div>
+                            <div class="profile-dropdown-divider"></div>
+                            <button class="profile-dropdown-logout" id="dropdownLogoutBtn">🚪 Logout</button>
+                        </div>
+                    </div>
+                    <button class="nav-btn" id="darkModeBtn" title="Toggle Dark Mode">🌙</button>
+                    <button class="nav-btn" id="logoutBtn" title="Logout" style="display: none;">🚪 Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <main class="main-container">
+            <!-- Sidebar with Habits List -->
+            <aside class="sidebar-habits">
+                <div class="sidebar-header">
+                    <h2>Habits</h2>
+                    <button class="btn-add" id="addHabitBtn" title="Add new habit">+</button>
+                </div>
+                <div class="habits-sidebar-list" id="habitsSidebarList">
+                    <!-- Habits will be inserted here -->
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="tracker-main">
+                <!-- Tracker Table -->
+                <section class="tracker-section">
+                    <div class="tracker-scroll">
+                        <div class="tracker-table" id="trackerTable">
+                            <!-- Tracker will be inserted here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Completion Trend Section -->
+        <section class="analytics-trend-section">
+            <div class="analytics-trend-header">
+                <h3>📉 Completion Trend</h3>
+                <p class="analytics-trend-subtitle">Daily completion percentage</p>
+            </div>
+            <div class="analytics-trend-container">
+                <canvas id="completionChart" style="max-height: 250px;"></canvas>
+            </div>
+        </section>
+
+        <!-- Monthly Completion Graph -->
+        <section class="monthly-completion-section">
+            <div class="monthly-completion-header">
+                <h3>📊 Monthly Completion Summary</h3>
+                <p class="monthly-completion-subtitle">Total completions by habit</p>
+            </div>
+            <div class="monthly-completion-container">
+                <canvas id="monthlyCompletionChart" style="max-height: 300px;"></canvas>
+            </div>
+        </section>
+
+        <!-- Overall Progress Section -->
+        <section class="overall-progress-section">
+            <div class="progress-card-wrapper">
+                <div class="analytics-header">
+                    <h4>📈 Overall Progress</h4>
+                    <p class="analytics-subtitle">Monthly completion percentage</p>
+                </div>
+                <div class="progress-display" id="goalDisplay">
+                    <div class="donut-chart" id="donutChart">
+                        <svg viewBox="0 0 100 100" style="width: 140px; height: 140px;">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(148, 163, 184, 0.2)" stroke-width="8"/>
+                            <circle id="donutProgress" cx="50" cy="50" r="45" fill="none" stroke="#6366f1" stroke-width="8" 
+                                stroke-dasharray="0 282.7" stroke-dashoffset="0" transform="rotate(-90 50 50)" style="transition: stroke-dasharray 0.3s;"/>
+                            <text x="50" y="55" text-anchor="middle" font-size="28" font-weight="bold" fill="currentColor">—%</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <footer class="quick-actions">
+            <button class="btn btn-primary" id="exportBtn">📥 Export</button>
+            <button class="btn btn-secondary" id="settingsBtn">⚙️ Settings</button>
+        </footer>
+    </div>
+
+    <!-- Modal for Add Habit -->
+    <div class="modal" id="habitModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Add New Habit</h2>
+            <form id="habitForm">
+                <div class="form-group">
+                    <label for="habitEmoji">Emoji Icon</label>
+                    <input type="text" id="habitEmoji" placeholder="e.g., 📚" maxlength="2" value="🎯">
+                </div>
+                <div class="form-group">
+                    <label for="habitName">Habit Name</label>
+                    <input type="text" id="habitName" placeholder="e.g., Study, Exercise..." required>
+                </div>
+                <div class="form-group">
+                    <label for="habitCategory">Category</label>
+                    <select id="habitCategory">
+                        <option value="health">Health</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="learning">Learning</option>
+                        <option value="mindfulness">Mindfulness</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Habit</button>
+                    <button type="button" class="btn btn-secondary" id="modalCancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Settings</h2>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Dark Mode</h3>
+                        <p>Enable dark mode for better viewing</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="divider"></div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Reset All Data</h3>
+                        <p>Clear all habits and progress</p>
+                    </div>
+                    <button class="btn btn-danger" id="resetDataBtn">Reset</button>
+                </div>
+                <div class="divider"></div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Export Data</h3>
+                        <p>Download your progress</p>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" id="exportCsvBtn">CSV</button>
+                        <button class="btn btn-secondary" id="exportJsonBtn">JSON</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div> <!-- End main-app -->
+    </div>
+
+    <!-- Modal for Export -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Export Your Data</h2>
+            <div class="export-options">
+                <button class="btn btn-secondary btn-block" id="exportCsvModalBtn">📊 CSV Format</button>
+                <button class="btn btn-secondary btn-block" id="exportJsonModalBtn">📋 JSON Format</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
